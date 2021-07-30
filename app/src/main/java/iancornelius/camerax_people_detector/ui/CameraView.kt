@@ -1,12 +1,18 @@
 package iancornelius.camerax_people_detector.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.display.DisplayManager
 import android.util.DisplayMetrics
-import androidx.camera.core.*
+import android.util.Log
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import android.util.Size
+import androidx.camera.core.AspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
@@ -14,33 +20,27 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwitchCamera
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import iancornelius.camerax_people_detector.algorithms.PeopleDetector
+import java.util.concurrent.Executor
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+class CameraView {
 
-class CameraPreview {
+    private var lensFacing: Int = CameraSelector.LENS_FACING_FRONT
     private var cameraProvider: ProcessCameraProvider? = null
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
-    private var camera: Camera? = null
     private lateinit var displayManager: DisplayManager
-    private var preview: Preview? = null
-    private var imageAnalyzer: ImageAnalysis? = null
 
-
-    @androidx.compose.ui.tooling.preview.Preview
     @Composable
-    fun DisplayCamera() {
+    fun Show(imageAnalyser: ImageAnalysis.Analyzer) {
         val context = LocalContext.current
         val lifecycleOwner = LocalLifecycleOwner.current
         val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
@@ -56,7 +56,7 @@ class CameraPreview {
                         } else {
                             CameraSelector.LENS_FACING_FRONT
                         }
-                        bindCameraUseCases(previewView, lifecycleOwner, context)
+                        bindCameraView(lifecycleOwner, previewView, imageAnalyser, context)
                     },
                     modifier = Modifier.padding(20.dp)
                 ) {
@@ -65,49 +65,51 @@ class CameraPreview {
             }, content = {
                 AndroidView(modifier = Modifier.fillMaxSize(),
                     factory = { _context ->
-                    previewView = PreviewView(_context)
-                    cameraProviderFuture.addListener({
-                        cameraProvider = cameraProviderFuture.get()
-                        lensFacing = when {
-                            hasBackCamera() -> CameraSelector.LENS_FACING_BACK
-                            hasFrontCamera() -> CameraSelector.LENS_FACING_FRONT
-                            else -> throw IllegalStateException("Back and front camera are unavailable")
-                        }
-                        bindCameraUseCases(previewView, lifecycleOwner, context)
-                    }, ContextCompat.getMainExecutor(context))
-                    previewView
-                })
+                        previewView = PreviewView(_context)
+                        cameraProviderFuture.addListener({
+                            cameraProvider = cameraProviderFuture.get()
+                            lensFacing = when {
+                                hasBackCamera() -> CameraSelector.LENS_FACING_BACK
+                                hasFrontCamera() -> CameraSelector.LENS_FACING_FRONT
+                                else -> throw IllegalStateException("Back and front camera are unavailable")
+                            }
+                            bindCameraView(lifecycleOwner, previewView, imageAnalyser, _context)
+                        }, ContextCompat.getMainExecutor(context))
+                        previewView
+                    })
             }
         )
     }
 
-    @SuppressLint("RestrictedApi")
-    private fun bindCameraUseCases(previewView: PreviewView, lifecycleOwner: LifecycleOwner, context: Context) {
+    private fun bindCameraView(lifecycleOwner: LifecycleOwner, previewView: PreviewView,
+                               imageAnalyser: ImageAnalysis.Analyzer, context: Context) {
         val metrics: DisplayMetrics = context.resources.displayMetrics
         val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
         val rotation = displayManager.displays[0].rotation
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-        preview = Preview.Builder()
+        val preview = Preview.Builder()
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
             .build()
-        val executor = ContextCompat.getMainExecutor(context)
-        imageAnalyzer = ImageAnalysis.Builder()
-            .setTargetAspectRatio(screenAspectRatio)
-            .setTargetRotation(rotation)
+            .also { it.setSurfaceProvider(previewView.surfaceProvider) }
+        val cameraSelector = CameraSelector.Builder()
+            .requireLensFacing(lensFacing)
             .build()
-            .also {
-                it.setAnalyzer(executor, PeopleDetector { _ ->
-//                    Log.d("PeopleDetector-Debug", "$faces")
-                })
-            }
-
         cameraProvider.unbindAll()
-        camera = cameraProvider.bindToLifecycle(
-            lifecycleOwner, cameraSelector, preview, imageAnalyzer)
-        preview?.setSurfaceProvider(previewView.surfaceProvider)
+        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector,
+            setupImageAnalysis(previewView, ContextCompat.getMainExecutor(context), imageAnalyser),
+            preview)
+
+    }
+
+    private fun setupImageAnalysis(previewView: PreviewView, executor: Executor,
+                                   imageAnalyser: ImageAnalysis.Analyzer): ImageAnalysis {
+        return ImageAnalysis.Builder()
+            .setTargetResolution(Size(previewView.width, previewView.height))
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+            .apply { setAnalyzer(executor, imageAnalyser)}
     }
 
     private fun aspectRatio(width: Int, height: Int): Int {
@@ -130,4 +132,5 @@ class CameraPreview {
         private const val RATIO_4_3_VALUE = 4.0 / 3.0
         private const val RATIO_16_9_VALUE = 16.0 / 9.0
     }
+
 }

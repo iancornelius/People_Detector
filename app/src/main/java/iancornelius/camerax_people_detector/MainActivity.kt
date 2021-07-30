@@ -6,22 +6,24 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import iancornelius.camerax_people_detector.ui.CameraPreview
+import iancornelius.camerax_people_detector.algorithms.PeopleDetector
+import iancornelius.camerax_people_detector.ui.CameraView
+import iancornelius.camerax_people_detector.ui.FaceBounds
+import iancornelius.camerax_people_detector.ui.FaceViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val cameraPreview: CameraPreview = CameraPreview()
+    private val viewModel by viewModels<FaceViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!hasPermissions(this.applicationContext)) {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         } else {
-            setContent {
-                cameraPreview.DisplayCamera()
-            }
+            setViewContent()
         }
     }
 
@@ -31,12 +33,17 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
                 Toast.makeText(this.applicationContext, "Permission request granted", Toast.LENGTH_LONG).show()
-                setContent {
-                    cameraPreview.DisplayCamera()
-                }
+                setViewContent()
             } else {
                 Toast.makeText(this.applicationContext, "Permission request denied", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun setViewContent() {
+        setContent {
+            CameraView().Show(PeopleDetector {viewModel.setFace(it) })
+            FaceBounds().FaceBounds(viewModel.faceBoundingBox)
         }
     }
 
