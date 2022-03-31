@@ -30,6 +30,14 @@ class ObjectBounds {
                     style = Stroke(10f)
                 )
 
+                // Draw the centre of the detected face
+                drawCircle(
+                    color = Color.Red,
+                    radius = 5F,
+                    center = Offset(it.exactCenterX(), it.exactCenterY()),
+                    style = Stroke(2.5f)
+                )
+
             }
         }
     }

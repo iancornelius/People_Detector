@@ -3,16 +3,13 @@ package iancornelius.camerax_people_detector.ui
 import android.content.Context
 import android.hardware.display.DisplayManager
 import android.util.DisplayMetrics
-import android.util.Log
+import android.util.Size
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import android.util.Size
-import androidx.camera.core.AspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
@@ -20,8 +17,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwitchCamera
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -63,7 +61,8 @@ class CameraView {
                     Icon(Icons.Default.SwitchCamera,"")
                 }
             }, content = {
-                AndroidView(modifier = Modifier.fillMaxSize(),
+                AndroidView(modifier = Modifier
+                    .fillMaxSize(),
                     factory = { _context ->
                         previewView = PreviewView(_context)
                         cameraProviderFuture.addListener({
@@ -94,7 +93,7 @@ class CameraView {
             .build()
             .also { it.setSurfaceProvider(previewView.surfaceProvider) }
         val cameraSelector = CameraSelector.Builder()
-            .requireLensFacing(0)
+            .requireLensFacing(lensFacing)
             .build()
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector,

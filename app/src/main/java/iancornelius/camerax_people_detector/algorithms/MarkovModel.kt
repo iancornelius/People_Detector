@@ -45,15 +45,17 @@ class MarkovModel {
         }
     }
 
-    fun update_frequencies(previous: Int, current: Int): Unit {
-        F[previous][current] += 1
+    fun updateFrequencies(previous: Point, current: Point): Unit {
+        val i = STATES.indexOf(previous)
+        val j = STATES.indexOf(current)
+        F[i][j] += 1
     }
 
-    fun update_probabilities(): Unit {
-        for (i in 0..P.size) {
-            for (j in 0..P[i].size) {
+    fun updateProbabilities(): Unit {
+        for (i in P.indices) {
+            for (j in 0 until P[i].size) {
                 var total = 0.0
-                for (k in 0..F[i].size) {
+                for (k in 0 until F[i].size) {
                     total += F[i][k]
                     if (total != 0.0) {
                         P[i][j] = F[i][k] / total
@@ -65,11 +67,11 @@ class MarkovModel {
         }
     }
 
-    fun generate_prediction(curr: Point): Point {
+    fun generatePrediction(curr: Point): Point {
         val r = Random.nextFloat()
         val i = STATES.indexOf(curr)
         var total = 0.0
-        for (j in 0..STATES.size) {
+        for (j in STATES.indices) {
             total += P[i][j]
             if (r <= total) { return STATES[j] }
         }

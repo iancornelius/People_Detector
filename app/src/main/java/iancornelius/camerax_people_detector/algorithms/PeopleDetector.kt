@@ -1,6 +1,7 @@
 package iancornelius.camerax_people_detector.algorithms
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.common.InputImage
@@ -13,6 +14,7 @@ private const val TAG = "PeopleDetector"
 class PeopleDetector(private val onFaceDetected: (MutableList<Face>) -> Unit) : ImageAnalysis.Analyzer {
     val realTimeOpts = FaceDetectorOptions.Builder()
         .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+        .enableTracking()
         .build()
 
     private val highAccuracyOpts = FaceDetectorOptions.Builder()
@@ -39,6 +41,11 @@ class PeopleDetector(private val onFaceDetected: (MutableList<Face>) -> Unit) : 
                 val inputImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
                 detector.process(inputImage)
                     .addOnSuccessListener {
+
+                        for (face in it) {
+                                Log.d(TAG, "Tracking ID: ${face.trackingId}")
+                        }
+
                         onFaceDetected.invoke(it)
                     }
                     .addOnCompleteListener {
