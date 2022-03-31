@@ -9,14 +9,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import iancornelius.camerax_people_detector.algorithms.PeopleDetector
-import iancornelius.camerax_people_detector.ui.CameraView
-import iancornelius.camerax_people_detector.ui.FaceBounds
-import iancornelius.camerax_people_detector.ui.FaceViewModel
+import iancornelius.camerax_people_detector.algorithms.ObjectDetector
+import iancornelius.camerax_people_detector.ui.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<FaceViewModel>()
+    private val viewModel by viewModels<ObjectViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +40,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewContent() {
         setContent {
-            CameraView().Show(PeopleDetector {viewModel.setFace(it) })
-            FaceBounds().FaceBounds(viewModel.faceBoundingBox)
+            CameraView().Show(ObjectDetector {viewModel.setObject(it) })
+            ObjectBounds().ObjectBounds(viewModel.objectBoundingBox)
         }
     }
 

@@ -1,27 +1,24 @@
 package iancornelius.camerax_people_detector.algorithms
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.google.mlkit.vision.objects.DetectedObject
+import com.google.mlkit.vision.objects.ObjectDetection
+import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 
-private const val TAG = "PeopleDetector"
+private const val TAG = "ObjectDetector"
 
-class PeopleDetector(private val onFaceDetected: (MutableList<Face>) -> Unit) : ImageAnalysis.Analyzer {
-    val realTimeOpts = FaceDetectorOptions.Builder()
-        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>) -> Unit) : ImageAnalysis.Analyzer {
+
+    private val realTimeOpts = ObjectDetectorOptions.Builder()
+        .setDetectorMode(ObjectDetectorOptions.STREAM_MODE)
+        .enableClassification()  // Optional
         .build()
 
-    private val highAccuracyOpts = FaceDetectorOptions.Builder()
-        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-        .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-        .build()
-
-    private val detector = FaceDetection.getClient(realTimeOpts)
+    private val detector = ObjectDetection.getClient(realTimeOpts)
 
     private var running = false
 
@@ -39,7 +36,7 @@ class PeopleDetector(private val onFaceDetected: (MutableList<Face>) -> Unit) : 
                 val inputImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
                 detector.process(inputImage)
                     .addOnSuccessListener {
-                        onFaceDetected.invoke(it)
+                        onObjectDetected.invoke(it)
                     }
                     .addOnCompleteListener {
                         running = false

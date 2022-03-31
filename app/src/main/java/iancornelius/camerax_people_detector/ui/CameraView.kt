@@ -94,7 +94,7 @@ class CameraView {
             .build()
             .also { it.setSurfaceProvider(previewView.surfaceProvider) }
         val cameraSelector = CameraSelector.Builder()
-            .requireLensFacing(lensFacing)
+            .requireLensFacing(0)
             .build()
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector,
