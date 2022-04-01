@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.google.mlkit.common.model.LocalModel
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.objects.DetectedObject
 import com.google.mlkit.vision.objects.ObjectDetection
+import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 
 private const val TAG = "ObjectDetector"
@@ -18,7 +20,22 @@ class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>)
         .enableMultipleObjects()
         .build()
 
-    private val detector = ObjectDetection.getClient(realTimeOpts)
+
+    // PEDESTRIAN DETECTION EXAMPLE
+    val localModel = LocalModel.Builder()
+        .setAssetFilePath("inception_v4_299_quant.tflite")
+        .build()
+
+    val customObjectDetectorOptions =
+        CustomObjectDetectorOptions.Builder(localModel)
+            .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
+            .enableClassification()
+            .setClassificationConfidenceThreshold(0.5f)
+            .setMaxPerObjectLabelCount(3)
+            .build()
+
+
+    private val detector = ObjectDetection.getClient(customObjectDetectorOptions)
 
     private var running = false
 

@@ -49,10 +49,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewContent() {
         setContent {
-//            CameraView().Show(ObjectDetector {viewModel.setObject(it)})
-            CameraView().Show(PeopleDetector {viewModelFaces.setFace(it)})
-//            Boundaries().displayBounds(viewModel.detectedObjects)
-            Boundaries().displayBounds(viewModelFaces.detectedFaces)
+            CameraView().Show(ObjectDetector {viewModel.setObject(it)})
+//            CameraView().Show(PeopleDetector {viewModelFaces.setFace(it)})
+            Boundaries().displayBounds(viewModel.detectedObjects)
+//            Boundaries().displayBounds(viewModelFaces.detectedFaces)
 
 //            if (viewModel.objectBoundingBox != null) {
 //                val currentLocation = Point(
