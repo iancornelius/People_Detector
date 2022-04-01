@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import iancornelius.camerax_people_detector.algorithms.MarkovModel
 import iancornelius.camerax_people_detector.algorithms.MovementHandler
 import iancornelius.camerax_people_detector.algorithms.ObjectDetector
+import iancornelius.camerax_people_detector.algorithms.PeopleDetector
 import iancornelius.camerax_people_detector.ui.*
 
 private const val TAG = "MainActivity"
@@ -48,12 +49,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewContent() {
         setContent {
-            CameraView().Show(ObjectDetector {viewModel.setObject(it)})
-//            ObjectBounds().ObjectBounds(viewModel.objecteBoundingBox)
-            ObjectBounds().ObjectBounds(viewModel.detectedObjects)
-
-//            CameraView().Show(PeopleDetector {viewModelFaces.setFace(it)})
-//            FaceBounds().FaceBounds(viewModelFaces.faceBoundingBox)
+//            CameraView().Show(ObjectDetector {viewModel.setObject(it)})
+            CameraView().Show(PeopleDetector {viewModelFaces.setFace(it)})
+//            Boundaries().displayBounds(viewModel.detectedObjects)
+            Boundaries().displayBounds(viewModelFaces.detectedFaces)
 
 //            if (viewModel.objectBoundingBox != null) {
 //                val currentLocation = Point(

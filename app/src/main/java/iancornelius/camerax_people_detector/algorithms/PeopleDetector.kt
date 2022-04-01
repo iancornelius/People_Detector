@@ -21,9 +21,10 @@ class PeopleDetector(private val onFaceDetected: (MutableList<Face>) -> Unit) : 
         .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
         .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+        .enableTracking()
         .build()
 
-    private val detector = FaceDetection.getClient(realTimeOpts)
+    private val detector = FaceDetection.getClient(highAccuracyOpts)
 
     private var running = false
 
@@ -41,11 +42,6 @@ class PeopleDetector(private val onFaceDetected: (MutableList<Face>) -> Unit) : 
                 val inputImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
                 detector.process(inputImage)
                     .addOnSuccessListener {
-
-                        for (face in it) {
-                                Log.d(TAG, "Tracking ID: ${face.trackingId}")
-                        }
-
                         onFaceDetected.invoke(it)
                     }
                     .addOnCompleteListener {
