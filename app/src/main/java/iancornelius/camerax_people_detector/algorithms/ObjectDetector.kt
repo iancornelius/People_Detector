@@ -15,7 +15,7 @@ class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>)
 
     private val realTimeOpts = ObjectDetectorOptions.Builder()
         .setDetectorMode(ObjectDetectorOptions.STREAM_MODE)
-        .enableClassification()  // Optional
+        .enableMultipleObjects()
         .build()
 
     private val detector = ObjectDetection.getClient(realTimeOpts)
@@ -36,6 +36,7 @@ class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>)
                 val inputImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
                 detector.process(inputImage)
                     .addOnSuccessListener {
+                        Log.d(TAG, "Size of Objects List: ${it.size}")
                         onObjectDetected.invoke(it)
                     }
                     .addOnCompleteListener {
