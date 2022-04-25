@@ -30,8 +30,9 @@ class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>)
         CustomObjectDetectorOptions.Builder(localModel)
             .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
             .enableClassification()
-            .setClassificationConfidenceThreshold(0.5f)
-            .setMaxPerObjectLabelCount(3)
+//            .setClassificationConfidenceThreshold(0.5f)
+//            .setMaxPerObjectLabelCount(3)
+            .enableMultipleObjects()
             .build()
 
 
@@ -53,7 +54,6 @@ class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>)
                 val inputImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
                 detector.process(inputImage)
                     .addOnSuccessListener {
-                        Log.d(TAG, "Size of Objects List: ${it.size}")
                         onObjectDetected.invoke(it)
                     }
                     .addOnCompleteListener {

@@ -29,7 +29,10 @@ class Boundaries {
     }
 
     @Composable
-    fun displayBounds(objects: SnapshotStateList<HashMap<Int, Rect>>) {
+    fun displayBounds(
+        objects: SnapshotStateList<HashMap<Int, HashMap<Int, Rect>>>,
+        labels: List<String>
+    ) {
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
@@ -37,30 +40,30 @@ class Boundaries {
         ) {
             for (obj in objects) {
                 for (item in obj) {
-                    Log.d(TAG, "Item: ${item.key} ${item.value}")
-                    drawContext.canvas.nativeCanvas.apply {
-                        drawText(
-                            "Object ID: ${item.key}",
-                            item.value.centerX().toFloat(),
-                            item.value.centerY().toFloat(),
-                            textPaint
-                        )
-                    }
-                    drawRect(
-                        color = Color.Red,
-                        size = Size(
-                            item.value.width().toFloat(),
-                            item.value.height().toFloat()
-                        ),
-                        topLeft = Offset(item.value.left.toFloat(), item.value.top.toFloat()),
-                        style = Stroke(10f)
-                    )
-                    drawCircle(
-                        color = Color.Red,
-                        radius = 10F,
-                        center = Offset(item.value.exactCenterX(), item.value.exactCenterY()),
-                        style = Stroke(3f)
-                    )
+                    Log.d(TAG, "Item: ${labels[item.key]} ${item.value}")
+//                    drawContext.canvas.nativeCanvas.apply {
+//                        drawText(
+//                            "Object ID: ${item.key}",
+//                            item.value.centerX().toFloat(),
+//                            item.value.centerY().toFloat(),
+//                            textPaint
+//                        )
+//                    }
+//                    drawRect(
+//                        color = Color.Red,
+//                        size = Size(
+//                            item.value.width().toFloat(),
+//                            item.value.height().toFloat()
+//                        ),
+//                        topLeft = Offset(item.value.left.toFloat(), item.value.top.toFloat()),
+//                        style = Stroke(10f)
+//                    )
+//                    drawCircle(
+//                        color = Color.Red,
+//                        radius = 10F,
+//                        center = Offset(item.value.exactCenterX(), item.value.exactCenterY()),
+//                        style = Stroke(3f)
+//                    )
                 }
             }
         }

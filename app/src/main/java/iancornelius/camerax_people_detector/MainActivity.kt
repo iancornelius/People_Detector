@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat
 import iancornelius.camerax_people_detector.algorithms.MarkovModel
 import iancornelius.camerax_people_detector.algorithms.MovementHandler
 import iancornelius.camerax_people_detector.algorithms.ObjectDetector
-import iancornelius.camerax_people_detector.algorithms.PeopleDetector
 import iancornelius.camerax_people_detector.ui.*
 
 private const val TAG = "MainActivity"
@@ -47,11 +46,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun readFromAsset(): List<String> {
+        val file_name = "labels.csv"
+        val bufferReader = application.assets.open(file_name).bufferedReader()
+        bufferReader.use {
+            return it.readLines()
+        }
+    }
+
     private fun setViewContent() {
         setContent {
             CameraView().Show(ObjectDetector {viewModel.setObject(it)})
 //            CameraView().Show(PeopleDetector {viewModelFaces.setFace(it)})
-            Boundaries().displayBounds(viewModel.detectedObjects)
+            Boundaries().displayBounds(viewModel.detectedObjects, readFromAsset())
 //            Boundaries().displayBounds(viewModelFaces.detectedFaces)
 
 //            if (viewModel.objectBoundingBox != null) {
