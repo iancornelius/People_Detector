@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.mlkit:linkfirebase:17.0.0@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/2f21f0e08d148790475e27dc68be3325/transformed/jetified-linkfirebase-17.0.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/033c5bf0758cafdf6b5b84fbf90aee42/transformed/jetified-linkfirebase-17.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/033c5bf0758cafdf6b5b84fbf90aee42/transformed/jetified-linkfirebase-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/033c5bf0758cafdf6b5b84fbf90aee42/transformed/jetified-linkfirebase-17.0.0/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.mlkit/linkfirebase/17.0.0/5f9c9e7e77f15d77e00e0f43042308148b832068/linkfirebase-17.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

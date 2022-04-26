@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.mlkit:object-detection-custom:17.0.0@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/49c321e0fa7a342a8610ecd7a7c84701/transformed/jetified-object-detection-custom-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f6520e658ebb121020a75bf50c0ab906/transformed/jetified-object-detection-custom-17.0.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f6520e658ebb121020a75bf50c0ab906/transformed/jetified-object-detection-custom-17.0.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f6520e658ebb121020a75bf50c0ab906/transformed/jetified-object-detection-custom-17.0.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.mlkit/object-detection-custom/17.0.0/9e2a78d5df41393efa95eb738d8bf700ec8f67f6/object-detection-custom-17.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

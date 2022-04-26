@@ -1,6 +1,7 @@
 package iancornelius.camerax_people_detector.ui
 
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -30,7 +31,7 @@ class Boundaries {
 
     @Composable
     fun displayBounds(
-        objects: SnapshotStateList<HashMap<Int, HashMap<Int, Rect>>>,
+        objects: SnapshotStateList<HashMap<Int, Rect>>,
         labels: List<String>
     ) {
         Canvas(
@@ -40,30 +41,31 @@ class Boundaries {
         ) {
             for (obj in objects) {
                 for (item in obj) {
-                    Log.d(TAG, "Item: ${labels[item.key]} ${item.value}")
-//                    drawContext.canvas.nativeCanvas.apply {
-//                        drawText(
-//                            "Object ID: ${item.key}",
-//                            item.value.centerX().toFloat(),
-//                            item.value.centerY().toFloat(),
-//                            textPaint
-//                        )
-//                    }
-//                    drawRect(
-//                        color = Color.Red,
-//                        size = Size(
-//                            item.value.width().toFloat(),
-//                            item.value.height().toFloat()
-//                        ),
-//                        topLeft = Offset(item.value.left.toFloat(), item.value.top.toFloat()),
-//                        style = Stroke(10f)
-//                    )
-//                    drawCircle(
-//                        color = Color.Red,
-//                        radius = 10F,
-//                        center = Offset(item.value.exactCenterX(), item.value.exactCenterY()),
-//                        style = Stroke(3f)
-//                    )
+                    Log.d(TAG, "Key: ${labels[item.key]} \n Value: ${item.value}")
+
+                    drawContext.canvas.nativeCanvas.apply {
+                        drawText(
+                            "Object ID: ${labels[item.key]}",
+                            item.value.centerX().toFloat(),
+                            item.value.centerY().toFloat(),
+                            textPaint
+                        )
+                    }
+                    drawRect(
+                        color = Color.Red,
+                        size = Size(
+                            item.value.width().toFloat(),
+                            item.value.height().toFloat()
+                        ),
+                        topLeft = Offset(item.value.left.toFloat(), item.value.top.toFloat()),
+                        style = Stroke(10f)
+                    )
+                    drawCircle(
+                        color = Color.Red,
+                        radius = 10F,
+                        center = Offset(item.value.exactCenterX(), item.value.exactCenterY()),
+                        style = Stroke(3f)
+                    )
                 }
             }
         }

@@ -9,32 +9,24 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.objects.DetectedObject
 import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions
-import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 
 private const val TAG = "ObjectDetector"
 
 class ObjectDetector(private val onObjectDetected: (MutableList<DetectedObject>) -> Unit) : ImageAnalysis.Analyzer {
 
-    private val realTimeOpts = ObjectDetectorOptions.Builder()
-        .setDetectorMode(ObjectDetectorOptions.STREAM_MODE)
-        .enableMultipleObjects()
-        .build()
-
-
     // PEDESTRIAN DETECTION EXAMPLE
     val localModel = LocalModel.Builder()
-        .setAssetFilePath("inception_v4_299_quant.tflite")
+        .setAssetFilePath("mnasnet_1.3_224_1_metadata_1.tflite")
         .build()
 
     val customObjectDetectorOptions =
         CustomObjectDetectorOptions.Builder(localModel)
             .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
             .enableClassification()
-//            .setClassificationConfidenceThreshold(0.5f)
-//            .setMaxPerObjectLabelCount(3)
+            .setClassificationConfidenceThreshold(0.5f)
+            .setMaxPerObjectLabelCount(3)
             .enableMultipleObjects()
             .build()
-
 
     private val detector = ObjectDetection.getClient(customObjectDetectorOptions)
 

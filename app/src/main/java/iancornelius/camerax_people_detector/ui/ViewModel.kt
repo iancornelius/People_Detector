@@ -11,22 +11,20 @@ import java.io.BufferedReader
 
 private const val TAG = "ObjectDetector"
 
-class ObjectViewModel : ViewModel() {
+class ViewModel : ViewModel() {
 
-//    var objectBoundingBox = mutableStateListOf<Rect>()
-    var detectedObjects = mutableStateListOf<HashMap<Int, HashMap<Int, Rect>>>()
-
+    var detectedObjects = mutableStateListOf<HashMap<Int, Rect>>()
 
 
     fun setObject(objects: MutableList<DetectedObject>) {
         detectedObjects.clear()
-        val tmpDetections: HashMap<Int, HashMap<Int, Rect>> = HashMap()
+        val tmpDetections: HashMap<Int, Rect> = HashMap()
         for (obj in objects) {
             val tmpData: HashMap<Int, Rect> = HashMap()
             for (lbl in obj.labels) {
                 Log.d(TAG, "Label: ${lbl.index} Rect: ${obj.boundingBox}")
                 tmpData[lbl.index] = obj.boundingBox
-                obj.trackingId?.let { tmpDetections.put(it, tmpData)}
+                obj.trackingId?.let { tmpDetections.put(it, obj.boundingBox)}
             }
 //            obj.trackingId?.let { tmpDetections.put(it, obj.boundingBox) }
 //            Log.d(TAG, "Tracking ID: ${obj.trackingId}")

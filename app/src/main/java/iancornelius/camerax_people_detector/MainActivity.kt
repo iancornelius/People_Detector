@@ -9,8 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import iancornelius.camerax_people_detector.algorithms.MarkovModel
-import iancornelius.camerax_people_detector.algorithms.MovementHandler
 import iancornelius.camerax_people_detector.algorithms.ObjectDetector
 import iancornelius.camerax_people_detector.ui.*
 
@@ -18,11 +16,7 @@ private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<ObjectViewModel>()
-    private val viewModelFaces by viewModels<FaceViewModel>()
-
-    private val markovModel: MarkovModel = MarkovModel()
-    private val movementHandler: MovementHandler = MovementHandler()
+    private val viewModel by viewModels<ViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         } else {
             setViewContent()
+            appContext = applicationContext
         }
     }
 
@@ -46,9 +41,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun readFromAsset(): List<String> {
-        val file_name = "labels.csv"
-        val bufferReader = application.assets.open(file_name).bufferedReader()
+    private fun readFromAsset(file: String): List<String> {
+        val bufferReader = application.assets.open(file).bufferedReader()
         bufferReader.use {
             return it.readLines()
         }
@@ -56,36 +50,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun setViewContent() {
         setContent {
-            CameraView().Show(ObjectDetector {viewModel.setObject(it)})
-//            CameraView().Show(PeopleDetector {viewModelFaces.setFace(it)})
-            Boundaries().displayBounds(viewModel.detectedObjects, readFromAsset())
-//            Boundaries().displayBounds(viewModelFaces.detectedFaces)
+            CameraView().Show(
+                ObjectDetector {
+                    viewModel.setObject(it)
+                })
 
-//            if (viewModel.objectBoundingBox != null) {
-//                val currentLocation = Point(
-//                    viewModel.objectBoundingBox!!.exactCenterX().roundToInt(),
-//                    viewModel.objectBoundingBox!!.exactCenterY().roundToInt()
-//                )
-//                val ewmaLocation = movementHandler.ewma_center(currentLocation, 0.5)
-//                val currentDirection = movementHandler.get_direction(ewmaLocation)
-//
-//                if (movementHandler.previousDirection != null || movementHandler.previousDirection != Point(-9, -9)) {
-//                    markovModel.updateFrequencies(movementHandler.previousDirection, currentDirection)
-//                    markovModel.updateProbabilities()
-//                    val prediction = markovModel.generatePrediction(currentDirection)
-//                    DirectionOverlay().drawDirection(viewModel.objectBoundingBox, currentDirection, prediction)
-//                }
-//                movementHandler.previousLocation = currentLocation
-//                movementHandler.previousDirection = currentDirection
-//            }
+            Boundaries().displayBounds(viewModel.detectedObjects,
+                readFromAsset("labels_mobilenet_quant_v1_224.txt"))
         }
     }
+
     companion object {
         const val PERMISSIONS_REQUEST_CODE = 10
         val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
         fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
+        lateinit var appContext: Context
     }
 
 }
